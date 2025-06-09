@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nido: Controle Compartilhado de Finanças</title>
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="favicon.png"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Roboto", sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7f6;
+        color: #333;
+      }
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      header {
+        background-color: #bb2649;
+        color: #ecf0f1;
+        padding: 60px 0;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      header h1 {
+        margin: 0;
+        font-size: 3em;
+        font-weight: 700;
+      }
+      header p {
+        font-size: 1.2em;
+        margin-top: 10px;
+      }
+      .navbar {
+        background-color: #991e3b;
+        overflow: hidden;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+      .navbar a {
+        float: left;
+        display: block;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 20px;
+        text-decoration: none;
+        font-size: 17px;
+        transition: background-color 0.3s ease;
+      }
+      .navbar a:hover {
+        background-color: #f8bbd0;
+        color: #991e3b;
+      }
+      .section {
+        background-color: #ffffff;
+        margin-top: 20px;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+      .section h2 {
+        color: #bb2649;
+        font-size: 2em;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #f8bbd0;
+        padding-bottom: 10px;
+      }
+      .section h3 {
+        color: #bb2649;
+        font-size: 1.5em;
+        margin-top: 30px;
+        margin-bottom: 15px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      ul li {
+        margin-bottom: 10px;
+        padding-left: 20px;
+        position: relative;
+      }
+      ul li::before {
+        content: "•";
+        color: #991e3b;
+        position: absolute;
+        left: 0;
+      }
+      .image-wrapper {
+        text-align: center;
+        margin: 30px 0;
+      }
+      .image-wrapper img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      footer {
+        text-align: center;
+        padding: 30px 0;
+        margin-top: 40px;
+        background-color: #bb2649;
+        color: #ecf0f1;
+        font-size: 0.9em;
+      }
+      a {
+        color: #3498db;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      #backToTopBtn {
+        display: none; /* Oculta o botão por padrão */
+        position: fixed; /* Fixa o botão na tela */
+        bottom: 30px; /* Distância da parte inferior */
+        right: 30px; /* Distância da parte direita */
+        z-index: 99; /* Garante que o botão fique acima de outros elementos */
+        border: none; /* Remove a borda */
+        outline: none; /* Remove o contorno ao focar */
+        background-color: #bb2649; /* Cor de fundo do botão (o vermelho que você sugeriu) */
+        color: white; /* Cor do texto/ícone */
+        cursor: pointer; /* Muda o cursor ao passar por cima */
+        padding: 15px; /* Preenchimento interno */
+        border-radius: 12px; /* Torna o botão circular */
+        font-size: 18px; /* Tamanho da fonte/ícone */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destaque */
+        transition: background-color 0.3s ease, transform 0.3s ease; /* Transições suaves */
+      }
+
+      #backToTopBtn:hover {
+        background-color: #8c1e3a; /* Tom mais escuro ao passar o mouse */
+        transform: scale(1.05); /* Pequeno aumento no tamanho */
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>Nido: Controle Compartilhado de Finanças</h1>
+        <p>Facilitando a gestão financeira do seu lar e da sua vida.</p>
+      </div>
+    </header>
+
+    <div class="navbar">
+      <a href="#introducao">Introdução</a>
+      <a href="#contexto-teorico">Contexto Teórico</a>
+      <a href="#o-projeto">O Projeto</a>
+      <a href="#proximos-passos">Próximos Passos</a>
+      <a href="#referencias">Referências</a>
+    </div>
+
+    <div class="container">
+      <div class="section" id="introducao">
+        <h2>1. Introdução</h2>
+        <p>
+          O controle financeiro doméstico é um desafio comum que afeta a
+          organização e a saúde financeira de indivíduos e famílias. A falta de
+          visibilidade sobre receitas e despesas ou uma relação disfuncional com
+          o dinheiro pode levar a decisões inadequadas, endividamento e
+          estresse, impactando diretamente o bem-estar geral (OTEMPO, 2025). Com
+          o avanço da tecnologia e a crescente digitalização de diversos
+          aspectos da vida cotidiana, sistemas web emergem como ferramentas
+          potenciais para mitigar esses problemas, oferecendo uma plataforma
+          centralizada e acessível para o gerenciamento de recursos financeiros
+          (O'BRIEN; MARAKAS, 2019; PRESSMAN; MAXIM, 2020).
+        </p>
+        <p>
+          Este trabalho propõe o desenvolvimento de um protótipo de sistema web
+          para controle de gastos domésticos, com foco na aplicação de
+          princípios de Orientação a Objetos (POO) e na utilização de
+          tecnologias modernas para sua implementação. A característica
+          distintiva deste projeto reside na sua simplicidade, tornando-o ideal
+          para demonstrações acadêmicas de conceitos de programação e
+          arquitetura de software, sem a complexidade de um banco de dados
+          persistente ou autenticação robusta.
+        </p>
+
+        <h3>1.1. Objetivo geral</h3>
+        <ul>
+          <li>
+            Desenvolver um protótipo de sistema web para controle de gastos
+            domésticos, utilizando a arquitetura de camadas e os princípios da
+            Orientação a Objetos, com persistência de dados em memória, a fim de
+            demonstrar a aplicação desses conceitos em um contexto prático.
+          </li>
+        </ul>
+
+        <h3>1.2. Objetivos específicos</h3>
+        <ul>
+          <li>
+            Modelar as entidades do domínio (Usuário, Carteira, Transação,
+            Categoria) utilizando classes e objetos, encapsulando dados e
+            comportamentos.
+          </li>
+          <li>
+            Estruturar o backend da aplicação em camadas (repositório, serviço,
+            controlador) para promover a separação de responsabilidades e a
+            manutenção do código.
+          </li>
+          <li>
+            Implementar a lógica de registro de usuários, criação e
+            gerenciamento de carteiras, e registro de transações financeiras
+            (ganhos e despesas) com persistência de dados em memória.
+          </li>
+          <li>
+            Desenvolver uma interface gráfica intuitiva e responsiva utilizando
+            o framework Vue.js e a biblioteca de componentes Vuetify, permitindo
+            a interação dos usuários com o sistema.
+          </li>
+          <li>
+            Permitir a associação de múltiplos usuários a uma carteira
+            específica através de um mecanismo de convite simples.
+          </li>
+          <li>
+            Exibir resumos de gastos e ganhos em dashboards básicos para
+            auxiliar na visualização do controle financeiro.
+          </li>
+        </ul>
+      </div>
+
+      <div class="section" id="contexto-teorico">
+        <h2>2. Contexto Teórico</h2>
+
+        <h3>2.1. Orientação a objetos</h3>
+        <p>
+          A Orientação a Objetos (POO) é um paradigma de programação que se
+          baseia no conceito de "objetos", que podem conter dados na forma de
+          campos (atributos) e código na forma de procedimentos (métodos) (GAMMA
+          et al., 1995). Os princípios fundamentais da POO são cruciais para o
+          desenvolvimento de sistemas complexos e com manutenção constante:
+        </p>
+        <ul>
+          <li>
+            <strong>Encapsulamento:</strong> Refere-se à capacidade de ocultar
+            os detalhes internos de um objeto e expor apenas uma interface
+            pública. Isso garante que os dados de um objeto só possam ser
+            acessados ou modificados através de seus próprios métodos,
+            protegendo a integridade dos dados (BOOCH, 1994). No projeto, as
+            classes como Usuario, Carteira e Transacao encapsulam seus atributos
+            e fornecem métodos para interagir com eles, como alterarNome na
+            classe Usuario ou adicionarValor na classe Carteira.
+          </li>
+          <li>
+            <strong>Abstração:</strong> Permite focar nos aspectos essenciais de
+            um objeto ou sistema, ignorando os detalhes menos importantes
+            (FOWLER, 2003). As classes, por si só, são abstrações de entidades
+            do mundo real, representando apenas as características e
+            comportamentos relevantes para o problema em questão. Por exemplo, a
+            classe Carteira abstrai o conceito de um espaço para organizar
+            gastos, sem detalhar como os dados são realmente armazenados (que é
+            uma responsabilidade do repositório).
+          </li>
+          <li>
+            <strong>Herança:</strong> Permite que uma classe (subclasse) derive
+            atributos e métodos de outra classe (superclasse), promovendo o
+            reuso de código e estabelecendo uma hierarquia de classes (DEITEL;
+            DEITEL, 2015). Embora não seja amplamente utilizada neste protótipo
+            simplificado, poderia ser aplicada em cenários mais complexos, como
+            diferentes tipos de transações que compartilham características
+            comuns.
+          </li>
+          <li>
+            <strong>Polimorfismo:</strong> Habilidade de objetos de diferentes
+            classes de responderem à mesma mensagem (chamada de método) de
+            maneiras distintas (GAMMA et al., 1995). Em um sistema financeiro,
+            poderia ser visto em diferentes formas de calcular taxas ou
+            rendimentos, dependendo do tipo de conta ou investimento.
+          </li>
+        </ul>
+        <p>
+          A aplicação destes princípios resulta em um código mais modular,
+          flexível, reutilizável e fácil de depurar e manter, características
+          essenciais para o desenvolvimento de software robusto (MARTIN, 2009).
+        </p>
+
+        <h3>2.2. Diagramas de classes</h3>
+        <p>
+          <strong>Diagramas de Classes</strong> são componentes essenciais da
+          UML (Unified Modeling Language), utilizados para modelar a estrutura
+          estática de um sistema (FOWLER, 2003). Eles representam as classes do
+          sistema, seus atributos, métodos e os relacionamentos entre elas. Para
+          este projeto, um diagrama de classes simplificado incluiria as
+          seguintes entidades e seus relacionamentos:
+        </p>
+        <ul>
+          <li>
+            <strong>Usuario:</strong> Representa um usuário do sistema, com
+            atributos como <code>id</code>, <code>nome</code>,
+            <code>email</code> e <code>senha</code> (simplificada). Contém
+            métodos para validação e manipulação de seus próprios dados.
+          </li>
+          <li>
+            <strong>Caixinha:</strong> Representa um grupo de controle
+            financeiro, agora chamado de "Caixinha". Possui atributos como
+            <code>id</code>, <code>nome</code>, <code>idUsuarioDono</code> (o
+            criador/administrador) e <code>saldo</code>. Inclui métodos para
+            gerenciar o saldo.
+          </li>
+          <li>Um Usuario pode ser dono de múltiplas Caixinhas.</li>
+          <li>
+            Uma Caixinha pode ter múltiplos Usuarios associados a ela, através
+            de uma associação intermediária (a ser gerenciada, por exemplo, por
+            um CaixinhaRepository ou uma tabela de ligação).
+          </li>
+          <li>
+            <strong>Transacao:</strong> Representa um registro de gasto ou
+            ganho, com atributos como <code>id</code>,
+            <code>idCaixinha</code> (à qual pertence),
+            <code>idUsuario</code> (quem registrou), <code>valor</code>,
+            <code>tipo</code> (ganho ou despesa), <code>descricao</code>,
+            <code>idCategoria</code> e <code>dataTransacao</code>. Possui um
+            método para formatar o valor.
+          </li>
+          <li>Uma Caixinha contém múltiplas entradas de Transacao.</li>
+          <li>Uma Transacao é registrada por um Usuario.</li>
+          <li>Uma Transacao está associada a uma Categoria.</li>
+          <li>
+            <strong>Categoria:</strong> Representa uma categoria de transação
+            (e.g., Alimentação, Moradia, Salário), com atributos como
+            <code>id</code> e <code>nome</code>.
+          </li>
+        </ul>
+        <p>
+          Os relacionamentos entre as entidades seriam estabelecidos da seguinte
+          forma:
+        </p>
+        <ul>
+          <li>
+            Um Usuario pode ser o dono de múltiplas Caixinhas (associação
+            um-para-muitos).
+          </li>
+          <li>
+            Uma Caixinha pode ter múltiplos Usuarios associados a ela
+            (associação muitos-para-muitos), onde um Usuario pode estar em N
+            Caixinhas.
+          </li>
+          <li>
+            Uma Caixinha contém múltiplas entradas de Transacao (associação
+            um-para-muitos).
+          </li>
+          <li>
+            Uma Transacao é registrada por um Usuario (associação um-para-um).
+          </li>
+          <li>
+            Uma Transacao está associada a uma Categoria (associação
+            um-para-um).
+          </li>
+        </ul>
+        <div class="image-wrapper">
+          <p>Figura 1 - Diagrama de classes</p>
+          <img src="class.png" alt="Diagrama de classes" />
+          <p>Fonte: Próprio autor</p>
+        </div>
+        <p>
+          Na Figura 1 fica evidenciado a relação e associação entre as classes
+          do sistema.
+        </p>
+        <p>
+          Os diagramas auxiliam na visualização da arquitetura do software e na
+          comunicação do design do sistema entre os desenvolvedores.
+          (SOMMERVILLE, 2011).
+        </p>
+
+        <h3>2.3. API REST</h3>
+        <p>
+          Uma API REST (Representational State Transfer Application Programming
+          Interface), frequentemente referida como API RESTful, é uma interface
+          de programação de aplicações que adere aos princípios e diretrizes de
+          design da arquitetura REST. Proposta por Roy Fielding em sua tese de
+          doutorado em 2000, REST é um estilo arquitetural para sistemas
+          distribuídos que visa otimizar a comunicação entre cliente e servidor,
+          especialmente na web (FIELDING, 2000).
+        </p>
+        <p>
+          Em sua essência, uma API REST permite que dois sistemas de computador
+          se comuniquem e troquem informações de forma segura e eficiente
+          através da internet, utilizando o protocolo HTTP (Hypertext Transfer
+          Protocol). Ela atua como um "contrato" entre o provedor de um serviço
+          (o servidor) e o consumidor desse serviço (o cliente), definindo como
+          as requisições devem ser feitas e como as respostas serão estruturadas
+          (RICHARDSON; AMUNDSON, 2013).
+        </p>
+        <p>
+          Os princípios chave da arquitetura REST incluem: Interface Uniforme
+          (com sub-restrições de identificação de recursos, manipulação de
+          recursos através de representações, mensagens auto-descritivas e
+          HATEOAS), Cliente-Servidor, Sem Estado, Cacheabilidade e Sistema em
+          Camadas (FIELDING, 2000). A aplicação desses princípios resulta em
+          APIs flexíveis, escaláveis e interoperáveis, amplamente utilizadas
+          para a construção de sistemas distribuídos na web (ERL, 2009).
+        </p>
+        <p>
+          No contexto deste projeto, a API REST é a ponte que permite que a
+          interface de usuário Vue.js se comunique com a lógica de negócio e os
+          dados (em memória) gerenciados pelo Node.js. Ao seguir os princípios
+          REST, mesmo em uma aplicação simplificada, garante-se uma base sólida
+          para a expansão e fácil manutenção futura do sistema.
+        </p>
+      </div>
+
+      <div class="section" id="o-projeto">
+        <h2>3. O Projeto</h2>
+        <p>
+          O projeto de sistema web para controle de gastos domésticos é dividido
+          em duas partes principais: o backend (servidor) e o frontend
+          (interface gráfica do usuário), comunicando-se via APIs REST.
+        </p>
+
+        <h3>3.1. O Projeto: Nido</h3>
+        <p>
+          O sistema de controle de gastos domésticos aqui proposto é denominado
+          Nido. Este nome foi escolhido para evocar o conceito de "lar" ou
+          "ninho" (do espanhol, <em>nido</em>), refletindo a ideia central de
+          que o sistema serve como um ponto centralizado para a gestão
+          financeira de uma residência ou grupo familiar. A metáfora do ninho
+          sublinha a noção de um espaço seguro e colaborativo onde os recursos
+          são geridos em conjunto.
+        </p>
+        <p>
+          A principal funcionalidade do Nido é oferecer uma visualização
+          simplificada e direta da saúde financeira de uma "casa", representada
+          por uma Carteira. O sistema permite que um usuário principal crie uma
+          ou mais carteiras, convidando outros usuários para participarem da
+          gestão financeira de cada uma delas. Essa estrutura visa espelhar a
+          dinâmica de múltiplos indivíduos (residentes sob o mesmo teto)
+          contribuindo e acompanhando as despesas e receitas de um ambiente
+          compartilhado.
+        </p>
+        <p>
+          O objetivo é que o Nido mostre, de maneira clara e objetiva, o saldo
+          disponível para cobrir as despesas da residência, bem como auxilie os
+          membros a monitorar e controlar seus gastos de forma eficaz. Através
+          do registro de despesas e ganhos, e a exibição desses dados em
+          dashboards básicos, o sistema busca promover a conscientização e a
+          colaboração financeira entre os usuários de uma mesma carteira,
+          prevenindo gastos excessivos e facilitando o planejamento financeiro
+          doméstico. A simplicidade na interação e a clareza na apresentação dos
+          dados são pilares para a usabilidade e eficácia do protótipo.
+        </p>
+
+        <h3>3.2. Node.js + Express.js</h3>
+        <p>
+          O backend é construído utilizando Node.js com o framework Express.js.
+          O Node.js oferece um ambiente de execução JavaScript no lado do
+          servidor, permitindo o desenvolvimento full-stack em uma única
+          linguagem (HOLMES, 2013). O Express.js, por sua vez, simplifica a
+          criação de APIs RESTful, facilitando o roteamento de requisições e o
+          gerenciamento de respostas (MOHAMMED, 2017).
+        </p>
+        <p>
+          A organização do backend segue a arquitetura em camadas, o que é
+          fundamental para demonstrar POO e modularidade (FOWLER, 2003):
+        </p>
+        <ul>
+          <li>
+            <strong>Camada de Modelos (src/models):</strong> Contém as
+            definições das classes de domínio (Usuario, Carteira, Transacao,
+            Categoria). Estas classes encapsulam os atributos e a lógica de
+            negócio intrínseca a cada entidade (e.g., validações básicas,
+            cálculo de saldo). Elas são puras, sem dependências de persistência
+            ou de transporte HTTP.
+          </li>
+          <li>
+            <strong>Camada de Repositórios (src/repositories):</strong> Abstrai
+            a lógica de persistência dos dados. Neste projeto, os repositórios
+            interagem com os dados armazenados em memória (simulando um banco de
+            dados), utilizando estruturas como arrays. Cada classe de
+            repositório (e.g., UsuarioRepository, CarteiraRepository) é
+            responsável pelas operações CRUD (Create, Read, Update, Delete) de
+            sua respectiva entidade, isolando a lógica de acesso a dados do
+            restante da aplicação. Isso demonstra o princípio da separação de
+            responsabilidades.
+          </li>
+          <li>
+            <strong>Camada de Serviços (src/services):</strong> Contém a lógica
+            de negócio mais complexa e orquestra as operações entre os
+            repositórios. As classes de serviço (e.g., UsuarioService,
+            CarteiraService) implementam as regras de negócio do sistema (e.g.,
+            "usuário pode criar carteira", "adicionar transação e atualizar
+            saldo da carteira"). Elas recebem instâncias dos repositórios via
+            injeção de dependência, tornando o código mais testável e
+            desacoplado (MARTIN, 2009).
+          </li>
+          <li>
+            <strong>Camada de Controladores (src/controllers):</strong>
+            Responsável por receber as requisições HTTP do frontend, chamar os
+            métodos apropriados nos serviços e enviar as respostas HTTP de
+            volta. Cada controlador (e.g., usuarioController) é um adaptador que
+            traduz as requisições web para chamadas de métodos de serviço, sem
+            conter lógica de negócio.
+          </li>
+          <li>
+            <strong>Camada de Rotas (src/routes):</strong> Define os endpoints
+            da API e mapeia-os para os métodos dos controladores.
+          </li>
+        </ul>
+        <p>
+          A comunicação entre essas camadas é feita através de objetos das
+          classes definidas, reforçando a Orientação a Objetos. Por exemplo, um
+          TransacaoService recebe um objeto TransacaoRepository e um objeto
+          CarteiraRepository em seu construtor, utilizando seus métodos para
+          realizar as operações necessárias.
+        </p>
+
+        <h3>3.3. Interface gráfica</h3>
+        <p>
+          A interface do usuário é desenvolvida com Vue.js, um framework
+          progressivo para construção de interfaces de usuário (PEREIRA, 2021).
+          O Vue.js é reativo e baseado em componentes, o que se alinha bem com
+          os princípios de POO ao permitir o encapsulamento de lógica, template
+          e estilo dentro de componentes reutilizáveis.
+        </p>
+        <p>
+          Para acelerar o desenvolvimento e garantir um design consistente e
+          moderno, utiliza-se a biblioteca de componentes Vuetify. O Vuetify
+          fornece uma vasta gama de componentes de interface de usuário prontos
+          para uso, como campos de texto, botões, seletores e cards, que seguem
+          o Material Design (VUE.JS, [s.d.]). A utilização do Vuetify permite ao
+          desenvolvedor focar na lógica da aplicação, enquanto a biblioteca
+          cuida dos aspectos visuais e da interatividade dos componentes.
+        </p>
+        <p>
+          A comunicação entre o frontend e o backend é realizada através de
+          requisições HTTP (utilizando a biblioteca Axios), onde os dados são
+          trocados em formato JSON. O frontend envia os dados das interações do
+          usuário para o backend, que processa a lógica de negócio e as
+          "persiste" em memória, retornando os resultados para serem exibidos na
+          interface. Para simular um usuário logado, um <code>userId</code> é
+          enviado no cabeçalho <code>x-user-id</code> em cada requisição
+          autenticada, simplificando o controle de acesso neste protótipo.
+        </p>
+      </div>
+
+      <div class="section" id="proximos-passos">
+        <h2>4. Próximos Passos</h2>
+        <p>
+          Os próximos passos deste projeto focam na sua implementação e
+          validação funcional conforme a descrição inicial, sem a inclusão de
+          melhorias que alterem o escopo do protótipo. As etapas de
+          desenvolvimento incluem:
+        </p>
+        <ul>
+          <li>
+            <strong>Configuração do Ambiente de Desenvolvimento:</strong>
+            Instalação das dependências e ferramentas necessárias para o
+            ambiente de backend (Node.js com Express) e frontend (Vue.js com
+            Vuetify).
+          </li>
+          <li>
+            <strong>Implementação do Backend:</strong> Desenvolvimento das
+            camadas de modelo, repositório (com armazenamento em memória),
+            serviço, controlador e rotas para todas as entidades do sistema
+            (Usuário, Carteira, Transação e Categoria), garantindo a lógica de
+            negócio e a manipulação dos dados em memória.
+          </li>
+          <li>
+            <strong>Implementação do Frontend:</strong> Construção das telas da
+            interface gráfica, abrangendo as funcionalidades de registro e login
+            de usuários, criação e gerenciamento de carteiras, formulários para
+            registro de transações (ganhos e despesas), e a visualização de
+            dashboards básicos com resumos financeiros.
+          </li>
+          <li>
+            <strong>Integração Cliente-Servidor:</strong> Estabelecimento e
+            refinamento da comunicação entre o frontend e o backend via APIs
+            REST, assegurando que as requisições HTTP sejam corretamente
+            enviadas e as respostas processadas para exibir as informações na
+            interface do usuário.
+          </li>
+          <li>
+            <strong>Validação Funcional:</strong> Realização de testes manuais
+            exaustivos para verificar a correta operação de todas as
+            funcionalidades descritas no projeto, garantindo que o protótipo
+            atenda aos objetivos específicos.
+          </li>
+          <li>
+            <strong>Demonstração Local:</strong> Preparação e execução do
+            ambiente de desenvolvimento para a apresentação e demonstração do
+            funcionamento do protótipo em um cenário local.
+          </li>
+        </ul>
+        <p>
+          Este projeto, mesmo em sua forma simplificada, serve como uma
+          excelente base para demonstrar os princípios da Orientação a Objetos e
+          a organização em camadas, preparando o terreno para futuros
+          desenvolvimentos mais complexos e com funcionalidades de nível de
+          produção.
+        </p>
+      </div>
+
+      <div class="section" id="referencias">
+        <h2>Referências</h2>
+        <ul>
+          <li>
+            BOOCH, G. Object-Oriented Analysis and Design with Applications. 2.
+            ed. Redwood City, CA: Benjamin Cummings, 1994.
+          </li>
+          <li>
+            DEITEL, P.; DEITEL, H. Java: Como Programar. 10. ed. São Paulo:
+            Pearson Education do Brasil, 2015.
+          </li>
+          <li>
+            ERL, T. SOA Principles of Service Design. Prentice Hall, 2009.
+          </li>
+          <li>
+            FIELDING, R. T. Architectural Styles and the Design of Network-based
+            Software Architectures. 2000. Tese (Doutorado em Ciência da
+            Computação) – University of California, Irvine, Irvine, 2000.
+            Disponível em:
+            <a
+              href="https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm"
+              target="_blank"
+              >https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm</a
+            >. Acesso em: 7 jun. 2025.
+          </li>
+          <li>
+            FOWLER, M. UML Distilled: A Brief Guide to the Standard Object
+            Modeling Language. 3. ed. Boston: Addison-Wesley, 2003.
+          </li>
+          <li>
+            GAMMA, E. et al. Design Patterns: Elements of Reusable
+            Object-Oriented Software. Reading, MA: Addison-Wesley, 1995.
+          </li>
+          <li>
+            HOLMES, S. Node.js in Action. Shelter Island, NY: Manning
+            Publications, 2013.
+          </li>
+          <li>
+            MARTIN, R. C. Clean Code: A Handbook of Agile Software
+            Craftsmanship. Upper Saddle River, NJ: Prentice Hall, 2009.
+          </li>
+          <li>
+            MOHAMMED, A. Express.js in Action. Shelter Island, NY: Manning
+            Publications, 2017.
+          </li>
+          <li>
+            O'BRIEN, J. A.; MARAKAS, G. M. Sistemas de Informação e as Decisões
+            Gerenciais na Era Digital. 9. ed. Porto Alegre: AMGH, 2019.
+          </li>
+          <li>
+            OTEMPO. Estresse financeiro: como a falta ou a relação disfuncional
+            com o dinheiro afeta a nossa saúde. O Tempo, 6 fev. 2025. Interessa.
+            Disponível em:
+            <a
+              href="https://www.otempo.com.br/interessa/2025/2/6/estresse-financeiro-como-a-falta-ou-a-relacao-disfuncional-com-o-dinheiro-afeta-a-nossa-saude"
+              target="_blank"
+              >https://www.otempo.com.br/interessa/2025/2/6/estresse-financeiro-como-a-falta-ou-a-relacao-disfuncional-com-o-dinheiro-afeta-a-nossa-saude</a
+            >. Acesso em: 7 jun. 2025.
+          </li>
+          <li>
+            PEREIRA, L. Vue.js: Guia Completo para Desenvolvimento Web Moderno.
+            Novatec, 2021.
+          </li>
+          <li>
+            PRESSMAN, R. S.; MAXIM, B. R. Software Engineering: A Practitioner's
+            Approach. 9. ed. New York: McGraw-Hill Education, 2020.
+          </li>
+          <li>
+            RICHARDSON, L.; AMUNDSON, M. RESTful Web APIs. Sebastopol, CA:
+            O'Reilly Media, 2013.
+          </li>
+          <li>
+            SOMMERVILLE, I. Engenharia de Software. 9. ed. São Paulo: Pearson
+            Prentice Hall, 2011.
+          </li>
+          <li>
+            VUE.JS. The Progressive JavaScript Framework. [s.d.]. Disponível em:
+            <a href="https://vuejs.org/" target="_blank">https://vuejs.org/</a>.
+            Acesso em: 7 jun. 2025.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <button onclick="topFunction()" id="backToTopBtn" title="Voltar ao Topo">
+      Voltar ao topo
+    </button>
+
+    <script>
+      // Obter o botão
+      let mybutton = document.getElementById("backToTopBtn");
+
+      // Quando o usuário rolar 200px para baixo do topo do documento, mostra o botão
+      window.onscroll = function () {
+        scrollFunction();
+      };
+
+      function scrollFunction() {
+        if (
+          document.body.scrollTop > 200 ||
+          document.documentElement.scrollTop > 200
+        ) {
+          mybutton.style.display = "block";
+        } else {
+          mybutton.style.display = "none";
+        }
+      }
+
+      // Quando o usuário clicar no botão, rola para o topo do documento
+      function topFunction() {
+        window.scrollTo({ top: 0, behavior: "smooth" }); // Para rolagem suave
+      }
+    </script>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2025 Nido. Todos os direitos reservados.</p>
+      </div>
+    </footer>
+  </body>
+</html>

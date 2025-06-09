@@ -1,10 +1,10 @@
-import { createPinia } from 'pinia';
+import { createPinia } from 'pinia'
 
-const pinia = createPinia();
+const pinia = createPinia()
 
-export default pinia;
+export default pinia
 
-// Opcional: exportar stores individuais para fácil importação em outros lugares
-export * from './auth';
-export * from './wallet';
-export * from './transaction';
+export * from './auth'
+export * from './fund'
+export * from './transaction'
+export * from '../types/funds'

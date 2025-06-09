@@ -1,27 +1,18 @@
 <template>
-  <!-- O v-container ocupa a altura disponível do v-main (corpo principal do app) -->
   <v-container
     fluid
-    class="fill-height d-flex flex-column align-center justify-center px-4 py-8 relative"
+    class="fill-height d-flex flex-column align-center justify-center px-4 py-8 landing-container"
   >
-    <!-- Camada de Fundo Visualmente Atrativo (div dedicada) -->
-    <div class="landing-background-effect"></div>
-
-    <!-- Card principal da Landing Page -->
-    <v-card
-      class="text-center pa-8 pa-md-12 elevation-10 rounded-xl max-w-lg w-full relative z-10"
-      color="surface"
-    >
-      <v-card-title
-        class="text-h4 sm:text-h3 md:text-h2 font-weight-bold text-primary mb-4 text-wrap"
+    <div class="content-wrapper">
+      <h1
+        class="main-title text-h3 sm:text-h2 md:text-h1 font-weight-bold text-primary mb-4 text-center text-wrap"
       >
-        Bem-vindo ao Nido!
-      </v-card-title>
-      <v-card-subtitle class="text-h6 sm:text-h5 text-medium-emphasis mb-8 text-wrap">
-        Seu lar, suas finanças, tudo em um só lugar.
-      </v-card-subtitle>
+        Nido
+      </h1>
+      <p class="tagline text-h6 sm:text-h5 text-medium-emphasis mb-8 text-center text-wrap">
+        Gerencie as finanças do seu lar de forma simples e colaborativa.
+      </p>
 
-      <!-- Call to Action (CTA) -->
       <v-btn
         color="primary"
         size="x-large"
@@ -31,58 +22,111 @@
         Comece Agora!
         <v-icon right>mdi-arrow-right</v-icon>
       </v-btn>
-    </v-card>
+    </div>
   </v-container>
 </template>
 
 <script setup lang="ts">
-// Nenhuma lógica específica de script é necessária aqui.
+import { computed, watch, onMounted } from 'vue'
+import { useTheme } from 'vuetify'
+
+const theme = useTheme()
+
+const themeConfig = {
+  nidoThemeLight: {
+    backgroundImage: 'url("cozy-bg.png")',
+    opacity: 0.5,
+  },
+  nidoThemeDark: {
+    backgroundImage: 'url("cozy-night.png")',
+    opacity: 0.4,
+  },
+}
+
+onMounted(() => {
+  watch(
+    () => theme.global.name.value,
+    (newThemeName) => {
+      const config = themeConfig[newThemeName] || themeConfig.nidoThemeLight
+      const container = document.querySelector('.landing-container')
+
+      if (container) {
+        ;(container as HTMLElement).style.setProperty('--bg-image', config.backgroundImage)
+        ;(container as HTMLElement).style.setProperty('--bg-opacity', config.opacity.toString())
+      }
+    },
+    { immediate: true },
+  )
+})
 </script>
 
 <style scoped>
-.fill-height {
-  min-height: calc(100vh - var(--v-layout-top, 0px) - var(--v-layout-bottom, 0px));
+.landing-container {
+  height: calc(100vh - var(--v-layout-top, 0px) - var(--v-layout-bottom, 0px));
   position: relative;
   overflow: hidden;
   background-color: var(--v-theme-colors-background);
 }
 
-.landing-background-effect {
+.landing-container::before {
+  content: '';
   position: absolute;
   inset: 0;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: var(--bg-opacity);
   z-index: 0;
   pointer-events: none;
-
-  background-image:
-    radial-gradient(circle at 15% 15%, var(--v-theme-colors-secondary) 0%, transparent 20%),
-    radial-gradient(circle at 85% 85%, var(--v-theme-colors-secondary-darken-1) 0%, transparent 25%),
-    radial-gradient(circle at 50% 50%, var(--v-theme-colors-primary) 0%, transparent 15%);
-  
-  background-repeat: no-repeat;
-  background-size: 300px 300px, 400px 400px, 250px 250px;
-  background-position: -80px -80px, calc(100% + 80px) calc(100% + 80px), center center;
-  
-  filter: blur(70px);
-  opacity: 0.18;
 }
 
-/* Garante que o texto dentro de v-card-title e v-card-subtitle quebre a linha */
-.v-card-title,
-.v-card-subtitle {
-  white-space: normal !important;
-  word-break: normal !important; /* Para garantir que palavras longas também quebrem */
-}
-
-/* Adaptações para garantir que o card seja centralizado e se ajuste bem */
-.v-card {
-  max-width: 90%;
-  z-index: 10;
+.content-wrapper {
   position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 16px;
+  width: 100%;
 }
 
-@media (min-width: 600px) {
-  .v-card {
-    max-width: 600px;
+.main-title {
+  font-size: 3.5rem;
+  line-height: 1.1;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--v-theme-colors-primary);
+}
+
+.tagline {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-wrap {
+  white-space: normal !important;
+  word-break: normal !important;
+}
+
+@media (max-width: 600px) {
+  .main-title {
+    font-size: 2.5rem;
+  }
+  .tagline {
+    font-size: 1.25rem;
+  }
+}
+@media (max-width: 400px) {
+  .main-title {
+    font-size: 2rem;
+  }
+  .tagline {
+    font-size: 1rem;
   }
 }
 </style>

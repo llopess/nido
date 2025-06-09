@@ -8,41 +8,44 @@ const router = createRouter({
       path: '/',
       name: 'landing',
       component: () => import('@/views/LandingView.vue'),
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false, title: 'Nido | Seu Lar, Suas Finanças' } // Título da aba para a Landing Page
     },
     {
       path: '/auth',
       name: 'auth',
       component: () => import('@/views/AuthView.vue'),
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false, title: 'Nido | Entrar ou Registrar' } // Título da aba para Autenticação
     },
     {
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('@/views/DashboardView.vue'),
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, title: 'Nido | Dashboard' } // Título da aba para o Dashboard
     },
     {
-      path: '/wallets', // Nova rota para listar caixinhas
-      name: 'wallets',
-      component: () => import('@/views/WalletsView.vue'),
-      meta: { requiresAuth: true }
+      path: '/funds',
+      name: 'funds',
+      component: () => import('@/views/FundsView.vue'),
+      meta: { requiresAuth: true, title: 'Nido | Meus Nidos' } // Título da aba para Meus Fundos
     },
     {
-      path: '/wallets/:id', // Nova rota para detalhes da caixinha (com ID dinâmico)
-      name: 'wallet-details',
-      component: () => import('@/views/WalletDetailsView.vue'),
-      props: true, // Permite que o ID da rota seja passado como prop
-      meta: { requiresAuth: true }
+      path: '/funds/:type/:id',
+      name: 'fund-details',
+      component: () => import('@/views/FundDetailsView.vue'),
+      props: true,
+      meta: { requiresAuth: true, title: 'Nido | Detalhes do Nido' } // Título da aba para Detalhes do Fundo
     },
     {
       path: '/:catchAll(.*)',
       redirect: '/',
+      meta: { title: 'Nido | Página Não Encontrada' } // Título da aba para rotas não encontradas
     },
   ],
 });
 
 router.beforeEach((to, from, next) => {
+  document.title = (to.meta.title as string || 'Nido')
+
   const authStore = useAuthStore();
   const isLoggedIn = authStore.isLoggedIn;
   const requiresAuth = to.meta.requiresAuth;

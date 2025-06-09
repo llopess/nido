@@ -1,47 +1,41 @@
 <template>
   <v-app>
-    <!-- Barra de Navegação Superior -->
+    
     <v-app-bar app :color="theme.global.current.value.dark ? 'surface' : 'primary'" dark>
-      <!-- Ícone do Hamburger para Mobile (visível apenas em telas pequenas) -->
+      
       <v-app-bar-nav-icon @click="drawer = !drawer" class="d-flex d-md-none"></v-app-bar-nav-icon>
 
       <v-toolbar-title class="text-h5 font-weight-bold">
-        <router-link to="/" style="text-decoration: none;">
-          <img 
-            :src="logoSrc" 
-            alt="Logo do Nido" 
-            class="nido-logo"
-          />
+        <router-link to="/" style="text-decoration: none">
+          <img :src="logoSrc" alt="Logo do Nido" class="nido-logo" />
         </router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
+
       
-      <!-- Botão para alternar tema (visível em todas as telas) -->
       <v-btn icon @click="toggleTheme">
-        <v-icon>{{ theme.global.current.value.dark ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-gibbous' }}</v-icon>
+        <v-icon>{{
+          theme.global.current.value.dark ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-gibbous'
+        }}</v-icon>
       </v-btn>
 
-      <!-- Links de Navegação Principal (visíveis apenas em telas grandes) -->
+      
       <div class="d-none d-md-flex">
         <v-btn v-if="authStore.isLoggedIn" text to="/dashboard" class="text-white">Dashboard</v-btn>
-        <v-btn v-if="authStore.isLoggedIn" text to="/wallets" class="text-white">Caixinhas</v-btn>
+        <v-btn v-if="authStore.isLoggedIn" text to="/funds" class="text-white">Meus Nidos</v-btn>
         
-        <!-- Botão para Entrar/Registrar ou Sair -->
-        <v-btn v-if="!authStore.isLoggedIn" text to="/auth" class="text-white">Entrar/Registrar</v-btn>
+
+        
+        <v-btn v-if="!authStore.isLoggedIn" text to="/auth" class="text-white"
+          >Entrar/Registrar</v-btn
+        >
         <v-btn v-else text @click="handleLogout" class="text-white">Sair</v-btn>
       </div>
     </v-app-bar>
 
-    <!-- Navigation Drawer (Menu Hamburger) -->
+    
     <v-navigation-drawer v-model="drawer" temporary>
       <v-list nav>
-        <v-list-item class="px-2">
-            <v-list-item-avatar>
-                <img :src="logoSrc" alt="Logo do Nido" class="nido-logo-drawer">
-            </v-list-item-avatar>
-            <v-list-item-title class="text-h6 font-weight-bold text-primary">Nido</v-list-item-title>
-        </v-list-item>
-
         <v-divider></v-divider>
 
         <v-list-item v-if="authStore.isLoggedIn" link to="/dashboard" @click="drawer = false">
@@ -49,11 +43,13 @@
           <v-list-item-title>Dashboard</v-list-item-title>
         </v-list-item>
 
-        <v-list-item v-if="authStore.isLoggedIn" link to="/wallets" @click="drawer = false">
-          <template v-slot:prepend><v-icon>mdi-wallet</v-icon></template>
-          <v-list-item-title>Caixinhas</v-list-item-title>
+        <v-list-item v-if="authStore.isLoggedIn" link to="/funds" @click="drawer = false">
+          
+          <template v-slot:prepend><v-icon>mdi-wallet-outline</v-icon></template>
+          
+          <v-list-item-title>Meus Nidos</v-list-item-title>
         </v-list-item>
-        
+
         <v-list-item v-if="!authStore.isLoggedIn" link to="/auth" @click="drawer = false">
           <template v-slot:prepend><v-icon>mdi-login</v-icon></template>
           <v-list-item-title>Entrar / Registrar</v-list-item-title>
@@ -66,24 +62,42 @@
       </v-list>
     </v-navigation-drawer>
 
-    <!-- Conteúdo Principal da Aplicação (Onde as views são carregadas) -->
+    
     <v-main>
       <router-view />
     </v-main>
 
-    <!-- Floating Action Button (FAB) para Registrar Transação -->
-    <v-btn
-      v-if="authStore.isLoggedIn && walletStore.activeWalletId && $route.name !== 'auth' && $route.name !== 'landing'"
-      class="fixed bottom-6 right-6 z-50 rounded-full elevation-10"
-      color="primary"
-      fab
-      size="large"
-      @click="showTransactionModal = true"
+    
+    <v-menu
+      v-if="
+        authStore.isLoggedIn &&
+        fundStore.activeCarteiraId &&
+        $route.name !== 'auth' &&
+        $route.name !== 'landing'
+      "
     >
-      <v-icon>mdi-plus</v-icon>
-    </v-btn>
+      <template v-slot:activator="{ props }">
+        <v-btn
+          class="fixed bottom-6 right-6 z-50 rounded-full elevation-10"
+          color="primary"
+          fab
+          size="large"
+          v-bind="props"
+        >
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item @click="showTransactionModal = true">
+          <v-list-item-title>Registrar Ganho/Despesa</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="openTransferModal">
+          <v-list-item-title>Transferir Nidos</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
 
-    <!-- Modal para Registrar Transação -->
+    
     <v-dialog v-model="showTransactionModal" max-width="500px">
       <v-card color="surface">
         <v-toolbar color="primary" flat>
@@ -93,8 +107,13 @@
         </v-toolbar>
         <v-card-text class="pa-6">
           <p class="text-medium-emphasis mb-4">
-            Adicione uma transação para a caixinha:
-            <span class="font-weight-bold text-primary">{{ walletStore.activeWallet ? walletStore.activeWallet.nome : 'Nenhuma selecionada' }}</span>
+            Registrar para:
+            <span class="font-weight-bold text-primary">
+              {{
+                fundStore.activeCarteira ? fundStore.activeCarteira.nome : 'Nenhuma Carteira Ativa'
+              }}
+              <span v-if="fundStore.activeCaixinha"> -> {{ fundStore.activeCaixinha.nome }}</span>
+            </span>
           </p>
           <v-form @submit.prevent="addGlobalTransaction">
             <v-select
@@ -128,14 +147,87 @@
               required
             ></v-text-field>
             <v-btn type="submit" color="primary" block class="mt-4">Registrar Transação</v-btn>
-            <v-alert v-if="globalTransactionMessage" :type="globalTransactionMessageType" class="mt-4">{{ globalTransactionMessage }}</v-alert>
+            <v-alert
+              v-if="globalTransactionMessage"
+              :type="globalTransactionMessageType"
+              class="mt-4"
+              >{{ globalTransactionMessage }}</v-alert
+            >
           </v-form>
         </v-card-text>
       </v-card>
     </v-dialog>
 
-    <!-- Rodapé -->
-    <v-footer app :color="theme.global.current.value.dark ? 'surface' : 'surface-light'" :class="{'text-text-medium-emphasis': !theme.global.current.value.dark, 'text-gray-400': theme.global.current.value.dark}">
+    
+    <v-dialog v-model="showGlobalTransferModal" max-width="500px">
+      <v-card color="surface">
+        <v-toolbar color="primary" flat>
+          <v-toolbar-title class="text-h5 text-white">Transferir Nidos</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="showGlobalTransferModal = false"><v-icon>mdi-close</v-icon></v-btn>
+        </v-toolbar>
+        <v-card-text class="pa-6">
+          <p class="text-medium-emphasis mb-4">
+            Transferir de:
+            <span class="font-weight-bold text-primary">
+              {{ fundStore.activeCarteira ? fundStore.activeCarteira.nome : 'N/A' }}
+            </span>
+          </p>
+          <v-form @submit.prevent="handleGlobalTransfer">
+            <v-select
+              v-model="globalTransferSourceFundId"
+              :items="availableTransferSourceFunds"
+              label="Fundo de Origem"
+              prepend-inner-icon="mdi-arrow-left-box"
+              item-title="nome"
+              item-value="id"
+              :rules="[rules.required]"
+              required
+            ></v-select>
+            <v-select
+              v-model="globalTransferDestFundId"
+              :items="availableGlobalTransferDestinations"
+              label="Fundo de Destino"
+              prepend-inner-icon="mdi-arrow-right-box"
+              item-title="nome"
+              item-value="id"
+              :rules="[rules.required]"
+              required
+            ></v-select>
+            <v-text-field
+              v-model.number="globalTransferAmount"
+              label="Valor da Transferência (R$)"
+              prepend-inner-icon="mdi-currency-usd"
+              type="number"
+              step="0.01"
+              :rules="[rules.required, rules.positive]"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="globalTransferDescription"
+              label="Descrição da Transferência"
+              prepend-inner-icon="mdi-note-text"
+              :rules="[rules.required]"
+              required
+            ></v-text-field>
+            <v-btn type="submit" color="primary" block class="mt-4">Realizar Transferência</v-btn>
+            <v-alert v-if="globalTransferMessage" :type="globalTransferMessageType" class="mt-4">{{
+              globalTransferMessage
+            }}</v-alert>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    
+    <v-footer
+      app
+      :color="theme.global.current.value.dark ? 'surface' : 'surface-light'"
+      :class="{
+        'text-text-medium-emphasis': !theme.global.current.value.dark,
+        'text-gray-400': theme.global.current.value.dark,
+      }"
+    >
       <v-container class="text-center">
         &copy; {{ new Date().getFullYear() }} Nido App. Todos os direitos reservados.
       </v-container>
@@ -144,136 +236,249 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useAuthStore, useWalletStore, useTransactionStore } from '@/stores';
-import { useRouter, useRoute } from 'vue-router';
-import { useTheme } from 'vuetify';
+import { ref, computed } from 'vue'
+import { useAuthStore, useFundStore, useTransactionStore } from '@/stores'
+import { useRouter, useRoute } from 'vue-router'
+import { useTheme } from 'vuetify'
+import type { Carteira, Caixinha } from '@/types/funds'
 
-const authStore = useAuthStore();
-const walletStore = useWalletStore();
-const transactionStore = useTransactionStore();
-const router = useRouter();
-const route = useRoute();
-const theme = useTheme();
+const authStore = useAuthStore()
+const fundStore = useFundStore()
+const transactionStore = useTransactionStore()
+const router = useRouter()
+const route = useRoute()
+const theme = useTheme()
 
-const drawer = ref(false); // Variável para controlar o navigation drawer
+const drawer = ref(false)
 
-const showTransactionModal = ref(false);
+const showTransactionModal = ref(false)
 const newGlobalTransaction = ref({
   tipo: 'despesa',
   valor: 0,
   descricao: '',
   categoriaNome: '',
-});
-const globalTransactionMessage = ref('');
-const globalTransactionMessageType = ref<'success' | 'error' | 'info'>('info');
+})
+const globalTransactionMessage = ref('')
+const globalTransactionMessageType = ref<'success' | 'error' | 'info'>('info')
+
+const showGlobalTransferModal = ref(false)
+const globalTransferSourceFundId = ref(null)
+const globalTransferDestFundId = ref(null)
+const globalTransferAmount = ref(0)
+const globalTransferDescription = ref('')
+const globalTransferMessage = ref('')
+const globalTransferMessageType = ref<'success' | 'error' | 'info'>('info')
 
 const rules = {
-  required: (value: any) => (value !== null && value !== undefined && value !== '') || 'Campo obrigatório.',
+  required: (value: any) =>
+    (value !== null && value !== undefined && value !== '') || 'Campo obrigatório.',
   positive: (value: number) => value > 0 || 'O valor deve ser positivo.',
-};
+}
 
-// URL da imagem de placeholder para o logo do Nido
-const logoSrc = ref('bg.png');
+const logoSrc = ref('bg.png')
 
-authStore.initializeAuth();
+authStore.initializeAuth()
 
 const handleLogout = () => {
-  authStore.logout();
-  walletStore.$reset();
-  transactionStore.$reset();
-  router.push('/auth');
-};
+  authStore.logout()
+  fundStore.$reset()
+  transactionStore.$reset()
+  router.push('/auth')
+}
 
 const handleLogoutAndCloseDrawer = () => {
-  handleLogout();
-  drawer.value = false; // Fecha o drawer após o logout
-};
+  handleLogout()
+  drawer.value = false
+}
 
 const toggleTheme = () => {
-  theme.global.name.value = theme.global.current.value.dark ? 'nidoThemeLight' : 'nidoThemeDark';
-};
+  theme.global.name.value = theme.global.current.value.dark ? 'nidoThemeLight' : 'nidoThemeDark'
+}
 
 const addGlobalTransaction = async () => {
-  if (!walletStore.activeWalletId || !authStore.currentUser) {
-    showGlobalMessage('Selecione uma caixinha ativa no Dashboard/Caixinhas para registrar transações.', true);
-    return;
+  let targetFundId: string | null = null
+  let targetFundType: 'carteira' | 'caixinha' | null = null
+
+  if (
+    fundStore.activeCaixinhaId &&
+    route.name === 'fund-details' &&
+    route.params.type === 'caixinha'
+  ) {
+    targetFundId = fundStore.activeCaixinhaId
+    targetFundType = 'caixinha'
+  } else if (fundStore.activeCarteiraId) {
+    targetFundId = fundStore.activeCarteiraId
+    targetFundType = 'carteira'
   }
 
-  const value = newGlobalTransaction.value.valor;
-  const description = newGlobalTransaction.value.descricao;
-  const categoryName = newGlobalTransaction.value.categoriaNome;
+  if (!targetFundId || !targetFundType || !authStore.currentUser) {
+    showGlobalMessage(
+      'Nenhum fundo selecionado ou usuário não autenticado para registrar transações.',
+      true,
+    )
+    return
+  }
+
+  const value = newGlobalTransaction.value.valor
+  const description = newGlobalTransaction.value.descricao
+  const categoryName = newGlobalTransaction.value.categoriaNome
 
   if (!value || isNaN(value) || value <= 0 || !description || !categoryName) {
-    showGlobalMessage('Por favor, preencha todos os campos corretamente.', true);
-    return;
+    showGlobalMessage('Por favor, preencha todos os campos corretamente.', true)
+    return
   }
 
   try {
     const transaction = {
       id: `trans-${Date.now()}`,
-      idCaixinha: walletStore.activeWalletId,
+      idFundo: targetFundId,
+      tipoFundo: targetFundType,
       idUsuario: authStore.currentUser.id,
       valor: value,
-      tipo: newGlobalTransaction.value.tipo,
+      tipo: newGlobalTransaction.value.tipo as 'ganho' | 'despesa',
       descricao: description,
       categoriaNome: categoryName,
       dataTransacao: new Date().toISOString(),
-    };
-    await transactionStore.addTransaction(transaction, walletStore.activeWalletId);
-    
-    if (walletStore.activeWallet) {
-        let newBalance = walletStore.activeWallet.saldo;
-        if (transaction.tipo === 'ganho') {
-            newBalance += transaction.valor;
-        } else {
-            newBalance -= transaction.valor;
-        }
-        walletStore.updateWalletBalance(walletStore.activeWallet.id, newBalance);
     }
+    await transactionStore.addTransaction(transaction)
 
-    showGlobalMessage('Transação registrada com sucesso!', false);
-    newGlobalTransaction.value = { tipo: 'despesa', valor: 0, descricao: '', categoriaNome: '' };
-    showTransactionModal.value = false;
-    
-    if (route.name === 'dashboard' && authStore.isLoggedIn && walletStore.activeWalletId) {
-        await walletStore.fetchWallets(); 
-        await transactionStore.fetchTransactions(walletStore.activeWalletId);
-    } else if (route.name === 'wallet-details' && authStore.isLoggedIn && walletStore.activeWalletId) {
-        await walletStore.fetchWallets(); 
-        await transactionStore.fetchTransactions(walletStore.activeWalletId);
+    showGlobalMessage('Transação registrada com sucesso!', false)
+    newGlobalTransaction.value = { tipo: 'despesa', valor: 0, descricao: '', categoriaNome: '' }
+    showTransactionModal.value = false
+
+    if (route.name === 'dashboard' && fundStore.activeCarteiraId) {
+      await fundStore.fetchUserFunds()
+      await transactionStore.fetchTransactions(fundStore.activeCarteiraId)
+    } else if (route.name === 'fund-details' && route.params.id && route.params.type) {
+      await fundStore.fetchUserFunds()
+      await transactionStore.fetchTransactions(route.params.id as string)
     }
-
-  } catch (error) {
-    showGlobalMessage(`Erro ao registrar transação: ${error.message}`, true);
+  } catch (error: any) {
+    showGlobalMessage(`Erro ao registrar transação: ${error.message}`, true)
   }
-};
+}
 
 const showGlobalMessage = (msg: string, isError: boolean) => {
-  globalTransactionMessage.value = msg;
-  globalTransactionMessageType.value = isError ? 'error' : 'success';
+  globalTransactionMessage.value = msg
+  globalTransactionMessageType.value = isError ? 'error' : 'success'
   setTimeout(() => {
-    globalTransactionMessage.value = '';
-  }, 5000);
-};
+    globalTransactionMessage.value = ''
+  }, 5000)
+}
+
+const openTransferModal = () => {
+  globalTransferSourceFundId.value = fundStore.activeCarteiraId
+  globalTransferDestFundId.value = null
+  globalTransferAmount.value = 0
+  globalTransferDescription.value = ''
+  globalTransferMessage.value = ''
+  globalTransferMessageType.value = 'info'
+  showGlobalTransferModal.value = true
+}
+
+const availableTransferSourceFunds = computed(() => {
+  if (!authStore.currentUser) return []
+
+  const userFunds = [
+    ...fundStore.carteiras
+      .filter((f) => f.membros.includes(authStore.currentUser!.id))
+      .map((f) => ({ id: f.id, nome: f.nome, type: 'carteira' })),
+    ...fundStore.caixinhas
+      .filter((f) => f.membros.includes(authStore.currentUser!.id))
+      .map((f) => ({ id: f.id, nome: f.nome, type: 'caixinha' })),
+  ]
+  return userFunds
+})
+
+const availableGlobalTransferDestinations = computed(() => {
+  if (!globalTransferSourceFundId.value) return []
+  const sourceFund = availableTransferSourceFunds.value.find(
+    (f) => f.id === globalTransferSourceFundId.value,
+  )
+  if (!sourceFund) return []
+
+  return availableTransferSourceFunds.value.filter((f) => f.id !== sourceFund.id)
+})
+
+const handleGlobalTransfer = async () => {
+  if (
+    !globalTransferSourceFundId.value ||
+    !globalTransferDestFundId.value ||
+    !authStore.currentUser
+  ) {
+    showGlobalMessage('Selecione os fundos de origem e destino.', true)
+    return
+  }
+  if (globalTransferAmount.value <= 0 || isNaN(globalTransferAmount.value)) {
+    showGlobalMessage('O valor da transferência deve ser positivo.', true)
+    return
+  }
+
+  const sourceFund = availableTransferSourceFunds.value.find(
+    (f) => f.id === globalTransferSourceFundId.value,
+  )
+  const destFund = availableGlobalTransferDestinations.value.find(
+    (f) => f.id === globalTransferDestFundId.value,
+  )
+
+  if (!sourceFund || !destFund) {
+    showGlobalMessage('Nidos de origem ou destino inválidos.', true)
+    return
+  }
+
+  const currentSourceFundBalance =
+    fundStore.getFundById(sourceFund.id, sourceFund.type as 'carteira' | 'caixinha')?.saldo || 0
+  if (currentSourceFundBalance < globalTransferAmount.value) {
+    showGlobalMessage('Saldo insuficiente no fundo de origem para esta transferência.', true)
+    return
+  }
+
+  try {
+    await transactionStore.transferFunds(
+      sourceFund.id,
+      sourceFund.type as 'carteira' | 'caixinha',
+      destFund.id,
+      destFund.type as 'carteira' | 'caixinha',
+      globalTransferAmount.value,
+      globalTransferDescription.value,
+      authStore.currentUser.id,
+    )
+
+    showGlobalMessage('Transferência realizada com sucesso!', false)
+    showGlobalTransferModal.value = false
+    globalTransferSourceFundId.value = null
+    globalTransferDestFundId.value = null
+    globalTransferAmount.value = 0
+    globalTransferDescription.value = ''
+
+    await fundStore.fetchUserFunds()
+    if (route.name === 'dashboard' && fundStore.activeCarteiraId) {
+      await transactionStore.fetchTransactions(fundStore.activeCarteiraId)
+    } else if (route.name === 'fund-details' && route.params.id && route.params.type) {
+      await transactionStore.fetchTransactions(route.params.id as string)
+    }
+  } catch (error: any) {
+    showGlobalMessage(`Erro na transferência: ${error.message}`, true)
+  }
+}
 </script>
 
 <style scoped>
-/* Estilo para a imagem do logo no cabeçalho */
+
 .nido-logo {
-  max-height: 90px; /* Ajuste a altura máxima conforme necessário */
-  width: auto; /* Mantém a proporção */
-  filter: brightness(0) invert(1); /* Torna o logo branco para contrastar com o primary (bordô) */
+  max-height: 90px; 
+  width: auto; 
+  filter: brightness(0) invert(1); 
 }
 
-/* Estilo para a imagem do logo no drawer */
+
 .nido-logo-drawer {
-    max-height: 32px;
-    width: auto;
-    margin-right: 8px; /* Espaço entre o logo e o título no drawer */
+  max-height: 32px;
+  width: auto;
+  margin-right: 8px; 
 }
 
-/* Garante que o router-link não tenha sublinhado */
+
 .text-white {
   text-decoration: none;
 }
