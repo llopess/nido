@@ -1,27 +1,33 @@
 // src/plugins/vuetify.ts
 
-import 'vuetify/styles';
-import { createVuetify } from 'vuetify';
-import * as components from 'vuetify/components';
-import * as directives from 'vuetify/directives';
-import '@mdi/font/css/materialdesignicons.css';
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import '@mdi/font/css/materialdesignicons.css'
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
-// Função para detectar o tema preferido do dispositivo
 const getPreferredTheme = () => {
   if (typeof window !== 'undefined' && window.matchMedia) {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'nidoThemeDark' : 'nidoThemeLight';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'nidoThemeDark'
+      : 'nidoThemeLight'
   }
-  return 'nidoThemeLight'; // Padrão se não puder detectar (ex: SSR, navegador antigo)
-};
+  return 'nidoThemeLight'
+}
 
 const vuetify = createVuetify({
   components,
   directives,
   icons: {
-    iconfont: 'mdi',
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+    },
   },
   theme: {
-    defaultTheme: getPreferredTheme(), // ATUALIZADO: Define o tema padrão com base na preferência do dispositivo
+    defaultTheme: getPreferredTheme(),
     themes: {
       nidoThemeLight: {
         dark: false,
@@ -63,6 +69,6 @@ const vuetify = createVuetify({
       },
     },
   },
-});
+})
 
-export default vuetify;
+export default vuetify

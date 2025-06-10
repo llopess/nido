@@ -154,7 +154,6 @@
       </v-card>
     </v-dialog>
 
-    
     <v-dialog v-model="showTransferModal" max-width="500px">
       <v-card color="surface">
         <v-toolbar color="primary" flat>
@@ -210,7 +209,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAuthStore, useFundStore, useTransactionStore, Fund, Carteira, Caixinha } from '@/stores'
+import { useAuthStore, useFundStore, useTransactionStore } from '@/stores'
+import type { Caixinha, Carteira, Fund } from '@/stores'
 
 const route = useRoute()
 const router = useRouter()

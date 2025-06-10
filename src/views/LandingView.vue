@@ -32,13 +32,15 @@ import { useTheme } from 'vuetify'
 
 const theme = useTheme()
 
+const cozyBgUrl = new URL('/cozy-bg.png', import.meta.url).href
+
 const themeConfig = {
   nidoThemeLight: {
-    backgroundImage: 'url("cozy-bg.png")',
-    opacity: 0.5,
+    backgroundImage: `url("${cozyBgUrl}")`,
+    opacity: 0.2,
   },
   nidoThemeDark: {
-    backgroundImage: 'url("cozy-night.png")',
+    backgroundImage: `url("${cozyBgUrl}")`,
     opacity: 0.4,
   },
 }
@@ -47,9 +49,10 @@ onMounted(() => {
   watch(
     () => theme.global.name.value,
     (newThemeName) => {
-      const config = themeConfig[newThemeName] || themeConfig.nidoThemeLight
+      // Correção: Adiciona asserção de tipo para 'newThemeName'
+      const config =
+        themeConfig[newThemeName as keyof typeof themeConfig] || themeConfig.nidoThemeLight
       const container = document.querySelector('.landing-container')
-
       if (container) {
         ;(container as HTMLElement).style.setProperty('--bg-image', config.backgroundImage)
         ;(container as HTMLElement).style.setProperty('--bg-opacity', config.opacity.toString())
@@ -106,6 +109,7 @@ onMounted(() => {
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  color: var(--v-theme-colors-text-medium-emphasis);
 }
 
 .text-wrap {

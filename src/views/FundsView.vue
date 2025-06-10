@@ -290,7 +290,7 @@ const joinCaixinha = async () => {
 const viewFundDetails = (id: string, type: 'carteira' | 'caixinha') => {
   if (type === 'carteira') {
     fundStore.setActiveCarteira(id)
-    fundStore.setActiveCaixinha(null)
+    fundStore.setActiveCaixinha('')
   } else {
     fundStore.setActiveCaixinha(id)
 
